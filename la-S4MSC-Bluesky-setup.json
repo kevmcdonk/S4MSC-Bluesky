@@ -1,0 +1,200 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {}
+                }
+            }
+        },
+        "actions": {
+            "Check_BlueskySearchConnector_exists": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://graph.microsoft.com/beta/external/connections/S4MSCBlueskySearchConnector",
+                    "method": "GET",
+                    "authentication": {
+                        "audience": "https://graph.microsoft.com",
+                        "clientId": "",
+                        "secret": "",
+                        "tenant": "",
+                        "type": "ActiveDirectoryOAuth"
+                    }
+                },
+                "runAfter": {}
+            },
+            "Check_schema_exists": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://graph.microsoft.com/beta/external/connections/S4MSCBlueskySearchConnector/schema",
+                    "method": "GET",
+                    "authentication": {
+                        "audience": "https://graph.microsoft.com",
+                        "clientId": "",
+                        "secret": "",
+                        "tenant": "",
+                        "type": "ActiveDirectoryOAuth"
+                    }
+                },
+                "runAfter": {
+                    "Create_S4MSC-BlueskySearchConnector_if_doesn't_exist": [
+                        "Succeeded",
+                        "Skipped"
+                    ]
+                }
+            },
+            "Create_S4MSC-BlueskySearchConnector_if_doesn't_exist": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://graph.microsoft.com/beta/external/connections",
+                    "method": "POST",
+                    "body": {
+                        "description": "Connector for showing key tweets",
+                        "id": "S4MSCBlueskySearchConnector",
+                        "name": "Bluesky Connector"
+                    },
+                    "authentication": {
+                        "audience": "https://graph.microsoft.com",
+                        "clientId": "",
+                        "secret": "",
+                        "tenant": "",
+                        "type": "ActiveDirectoryOAuth"
+                    }
+                },
+                "runAfter": {
+                    "Check_BlueskySearchConnector_exists": [
+                        "Failed"
+                    ]
+                }
+            },
+            "Create_schema_if_it_doesn't_exists": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://graph.microsoft.com/beta/external/connections/S4MSCBlueskySearchConnector/schema",
+                    "method": "POST",
+                    "body": {
+                        "baseType": "microsoft.graph.externalItem",
+                        "properties": [
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": true,
+                                "name": "uri",
+                                "type": "String"
+                            },
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": true,
+                                "name": "aturi",
+                                "type": "String"
+                            },
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": true,
+                                "name": "authorName",
+                                "type": "String"
+                            },
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": true,
+                                "name": "authorHandle",
+                                "type": "String"
+                            },
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": true,
+                                "name": "authorAvatarUri",
+                                "type": "String"
+                            },
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": true,
+                                "name": "mediaUri",
+                                "type": "String"
+                            },
+                            {
+                                "isQueryable": true,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": false,
+                                "name": "indexedAt",
+                                "type": "DateTime"
+                            },
+                            {
+                                "isQueryable": false,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": false,
+                                "name": "replyCount",
+                                "type": "Int64"
+                            },
+                            {
+                                "isQueryable": false,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": false,
+                                "name": "repostCount",
+                                "type": "Int64"
+                            },
+                            {
+                                "isQueryable": false,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": false,
+                                "name": "likeCount",
+                                "type": "Int64"
+                            },
+                            {
+                                "isQueryable": false,
+                                "isRefinable": false,
+                                "isRetrievable": true,
+                                "isSearchable": false,
+                                "name": "quoteCount",
+                                "type": "Int64"
+                            }
+                        ]
+                    },
+                    "authentication": {
+                        "audience": "https://graph.microsoft.com",
+                        "clientId": "",
+                        "secret": "",
+                        "tenant": "",
+                        "type": "ActiveDirectoryOAuth"
+                    }
+                },
+                "runAfter": {
+                    "Check_schema_exists": [
+                        "Failed"
+                    ]
+                }
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {}
+        }
+    }
+}

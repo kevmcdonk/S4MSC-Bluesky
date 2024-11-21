@@ -1,0 +1,346 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "manual": {
+                "type": "Request",
+                "kind": "Http",
+                "inputs": {
+                    "schema": {}
+                }
+            }
+        },
+        "actions": {
+            "Get_token": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://bsky.social/xrpc/com.atproto.server.createSession",
+                    "method": "POST",
+                    "body": {
+                        "identifier": "kevin@mcd79.com",
+                        "password": "$I2$biUGhh9$"
+                    }
+                },
+                "runAfter": {},
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Search_posts": {
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://bsky.social/xrpc/app.bsky.feed.searchPosts?q=copilot&limit=50",
+                    "method": "GET",
+                    "headers": {
+                        "Authorization": "Bearer @{body('Parse_JSON')?['accessJwt']}"
+                    }
+                },
+                "runAfter": {
+                    "Parse_JSON": [
+                        "Succeeded"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Parse_JSON": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Get_token')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "did": {
+                                "type": "string"
+                            },
+                            "didDoc": {
+                                "type": "object",
+                                "properties": {
+                                    "@@context": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "alsoKnownAs": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "verificationMethod": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "controller": {
+                                                    "type": "string"
+                                                },
+                                                "publicKeyMultibase": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "type",
+                                                "controller",
+                                                "publicKeyMultibase"
+                                            ]
+                                        }
+                                    },
+                                    "service": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "type": {
+                                                    "type": "string"
+                                                },
+                                                "serviceEndpoint": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "type",
+                                                "serviceEndpoint"
+                                            ]
+                                        }
+                                    }
+                                }
+                            },
+                            "handle": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "emailConfirmed": {
+                                "type": "boolean"
+                            },
+                            "emailAuthFactor": {
+                                "type": "boolean"
+                            },
+                            "accessJwt": {
+                                "type": "string"
+                            },
+                            "refreshJwt": {
+                                "type": "string"
+                            },
+                            "active": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Get_token": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "Parse_Search": {
+                "type": "ParseJson",
+                "inputs": {
+                    "content": "@body('Search_posts')",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "posts": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "uri": {
+                                            "type": "string"
+                                        },
+                                        "cid": {
+                                            "type": "string"
+                                        },
+                                        "author": {
+                                            "type": "object",
+                                            "properties": {
+                                                "did": {
+                                                    "type": "string"
+                                                },
+                                                "handle": {
+                                                    "type": "string"
+                                                },
+                                                "displayName": {
+                                                    "type": "string"
+                                                },
+                                                "avatar": {
+                                                    "type": "string"
+                                                },
+                                                "createdAt": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "record": {
+                                            "type": "object",
+                                            "properties": {
+                                                "$type": {
+                                                    "type": "string"
+                                                },
+                                                "createdAt": {
+                                                    "type": "string"
+                                                },
+                                                "text": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "replyCount": {
+                                            "type": "integer"
+                                        },
+                                        "repostCount": {
+                                            "type": "integer"
+                                        },
+                                        "likeCount": {
+                                            "type": "integer"
+                                        },
+                                        "quoteCount": {
+                                            "type": "integer"
+                                        },
+                                        "indexedAt": {
+                                            "type": "string"
+                                        },
+                                        "embed": {
+                                            "type": "object",
+                                            "properties": {
+                                                "$type": {
+                                                    "type": "string"
+                                                },
+                                                "external": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "uri": {
+                                                            "type": "string"
+                                                        },
+                                                        "title": {
+                                                            "type": "string"
+                                                        },
+                                                        "description": {
+                                                            "type": "string"
+                                                        },
+                                                        "thumb": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "required": [
+                                        "uri",
+                                        "cid",
+                                        "author",
+                                        "record",
+                                        "replyCount",
+                                        "repostCount",
+                                        "likeCount",
+                                        "quoteCount",
+                                        "indexedAt",
+                                        "viewer"
+                                    ]
+                                }
+                            },
+                            "cursor": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Search_posts": [
+                        "Succeeded"
+                    ]
+                }
+            },
+            "For_each_2": {
+                "type": "Foreach",
+                "foreach": "@outputs('Parse_Search')?['body']?['posts']",
+                "actions": {
+                    "HTTP": {
+                        "type": "Http",
+                        "inputs": {
+                            "uri": "https://graph.microsoft.com/beta/external/connections/S4MSCBlueskySearchConnector/items/@{item()?['cid']}",
+                            "method": "PUT",
+                            "body": {
+                                "acl": [
+                                    {
+                                        "accessType": "grant",
+                                        "identitySource": "azureActiveDirectory",
+                                        "type": "everyone",
+                                        "value": "43c5e796-f484-4157-8c93-73ac8b1cf7bf"
+                                    }
+                                ],
+                                "content": {
+                                    "type": "text",
+                                    "value": "@{item()?['record']?['text']}"
+                                },
+                                "properties": {
+                                    "uri": "@{item()?['uri']}",
+                                    "aturi": "",
+                                    "authorName": "",
+                                    "authorHandle": "",
+                                    "authorAvatarUri": "",
+                                    "mediaUri": "",
+                                    "indexedAt": "@{item()?['record']?['createdAt']}",
+                                    "replyCount": "@item()?['replyCount']",
+                                    "repostCount": "@item()?['repostCount']",
+                                    "likeCount": "@item()?['likeCount']",
+                                    "quoteCount": "@item()?['quoteCount']"
+                                },
+                                "type": "microsoft.graph.externalItem"
+                            },
+                            "authentication": {
+                                "audience": "https://graph.microsoft.com",
+                                "clientId": "",
+                                "secret": "",
+                                "tenant": "",
+                                "type": "ActiveDirectoryOAuth"
+                            }
+                        }
+                    }
+                },
+                "runAfter": {
+                    "Parse_Search": [
+                        "Succeeded"
+                    ]
+                }
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "value": {}
+        }
+    }
+}

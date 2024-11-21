@@ -1,0 +1,93 @@
+{
+  "baseType": "microsoft.graph.externalItem",
+  "properties": [
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": true,
+      "name": "uri",
+      "type": "String"
+    },
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": true,
+      "name": "at-uri",
+      "type": "String"
+    },
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": true,
+      "name": "authorName",
+      "type": "String"
+    },
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": true,
+      "name": "authorHandle",
+      "type": "String"
+    },
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": true,
+      "name": "authorAvatarUri",
+      "type": "String"
+    },
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": true,
+      "name": "mediaUri",
+      "type": "String"
+    },
+    {
+      "isQueryable": true,
+      "isRefinable": false,
+      "isRetrievable": true,
+      "isSearchable": false,
+      "name": "indexedAt",
+      "type": "DateTime"
+    },
+    {
+        "isQueryable": false,
+        "isRefinable": false,
+        "isRetrievable": true,
+        "isSearchable": false,
+        "name": "replyCount",
+        "type": "Int64"
+    },
+    {
+        "isQueryable": false,
+        "isRefinable": false,
+        "isRetrievable": true,
+        "isSearchable": false,
+        "name": "repostCount",
+        "type": "Int64"
+    },
+    {
+        "isQueryable": false,
+        "isRefinable": false,
+        "isRetrievable": true,
+        "isSearchable": false,
+        "name": "likeCount",
+        "type": "Int64"
+    },
+    {
+        "isQueryable": false,
+        "isRefinable": false,
+        "isRetrievable": true,
+        "isSearchable": false,
+        "name": "quoteCount",
+        "type": "Int64"
+    }
+  ]
+}
